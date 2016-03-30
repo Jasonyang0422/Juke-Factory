@@ -27,7 +27,6 @@ albumFactory.fetchAll()
     //   $rootScope.$broadcast('pause');
     // } else $rootScope.$broadcast('play', song);
     if($scope.isPlaying() && song === $scope.getCurrentSong()){
-        console.log("hi")
         PlayerFactory.pause();
         return; 
     }
@@ -35,14 +34,9 @@ albumFactory.fetchAll()
       PlayerFactory.resume();
       return;
     }else{
-      PlayerFactory.start(song);
+      PlayerFactory.start(song, $scope.album.songs);
       return;
     }
-    // if(!$scope.isPlaying() && $scope.getCurrentSong() === null){
-    //   PlayerFactory.start(song);
-    // }else{
-    //   console.log('nothing');
-    // }
   };
 
   $scope.getCurrentSong = function(){
