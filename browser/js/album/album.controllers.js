@@ -3,26 +3,26 @@
 juke.controller('AlbumCtrl', function($scope, $http, $rootScope, $log , albumFactory, PlayerFactory) {
 
   // load our initial data
-albumFactory.fetchAll()
-  .then(function (albums) {
-    //console.log(albums);
-    return albumFactory.fetchById(albums[0]._id);
-    //return $http.get('/api/albums/' + albums[0]._id); // temp: get one
-  })    
-  //.then(function (res) { return res.data })
-  .then(function (album) {
-    console.log(album);
-    album.imageUrl = '/api/albums/' + album._id + '.image';
-    album.songs.forEach(function (song, i) {
-      song.audioUrl = '/api/songs/' + song._id + '.audio';
-      song.albumIndex = i;
-    });
-    $scope.album = album;
-  })
-  .catch($log.error); // $log service can be turned on and off; also, pre-bound
+ // albumFactory.fetchAll()
+ //      .then(function (albums) {
+ //        //console.log(albums);
+ //        return albumFactory.fetchById(albums[0]._id);
+ //        //return $http.get('/api/albums/' + albums[0]._id); // temp: get one
+ //      })    
+ //      //.then(function (res) { return res.data })
+ //      .then(function (album) {
+ //        console.log(album);
+ //        album.imageUrl = '/api/albums/' + album._id + '.image';
+ //        album.songs.forEach(function (song, i) {
+ //          song.audioUrl = '/api/songs/' + song._id + '.audio';
+ //          song.albumIndex = i;
+ //        });
+ //        $scope.album = album;
+ //      })
+ //      .catch($log.error); // $log service can be turned on and off; also, pre-bound
 
   // main toggle
-  $scope.toggle = function (song) {
+  $scope.toggle = function (song, songs) {
     // if ($scope.playing && song === $scope.currentSong) {
     //   $rootScope.$broadcast('pause');
     // } else $rootScope.$broadcast('play', song);
@@ -34,8 +34,10 @@ albumFactory.fetchAll()
       PlayerFactory.resume();
       return;
     }else{
-      PlayerFactory.start(song, $scope.album.songs);
-      return;
+      if(songs)
+        PlayerFactory.start(song, songs);
+      else
+        PlayerFactory.start(song, $scope.album.songs);        
     }
   };
 
@@ -51,7 +53,27 @@ albumFactory.fetchAll()
   // $scope.$on('play', play);
   // $scope.$on('next', next);
   // $scope.$on('prev', prev);
+  $rootScope.$on('viewSwap', function(event, data){
+    $scope.showMe = (data.name === 'oneAlbum');
 
+    if(data.name === 'oneAlbum'){
+      albumFactory.fetchAll()
+        .then(function (albums) {
+          return albumFactory.fetchById(data.id);
+        })    
+        .then(function (album) {
+          console.log(album);
+          album.imageUrl = '/api/albums/' + album._id + '.image';
+          album.songs.forEach(function (song, i) {
+            song.audioUrl = '/api/songs/' + song._id + '.audio';
+            song.albumIndex = i;
+          });
+          $scope.album = album;
+        })
+        .catch($log.error);
+    }
+
+});
   // functionality
   // function pause () {
   //   $scope.playing = false;

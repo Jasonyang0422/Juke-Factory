@@ -9,7 +9,6 @@ juke.factory('albumFactory', function($http){
 
 
   	function fetchAll(){
-  		//console.log('fetchAll');
   		return $http.get('/api/albums/')
   				      .then(function (res) { 
   					       return res.data
